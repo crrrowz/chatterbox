@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chatterbox Speech Studio | Autonomous Speech Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #0f172a;
+      --surface-elevated: #162036;
+      --surface-hover: #1e293b;
+      --border: #22304a;
+      --border-focus: #6366f1;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text-main: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-tertiary: #64748b;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(79, 70, 229, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Header */
+    header {
+      width: 100%;
+      max-width: 100vw;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.875rem 1.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      min-width: 0;
+    }
+
+    .logo-container {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: var(--radius-md);
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(79, 70, 229, 0.4);
+    }
+
+    .logo-icon {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .brand-tag {
+      font-size: 0.725rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      flex-shrink: 0;
+    }
+
+    .status-indicator.ready {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .hardware-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #c7d2fe;
+      background: #312e81;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #4338ca;
+      white-space: nowrap;
+    }
+
+    /* Navigation Tabs */
+    .tabs-bar {
+      width: 100%;
+      max-width: 100vw;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.75rem;
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: #818cf8;
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-icon {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      min-width: 0;
+    }
+
+    .tab-pane {
+      display: none;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Bento Grid with strictly bounded columns */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .bento-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      min-width: 0;
+    }
+
+    .card-title-icon {
+      width: 18px;
+      height: 18px;
+      fill: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 1.15rem;
+      min-width: 0;
+      width: 100%;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.45rem;
+      gap: 0.5rem;
+    }
+
+    .label-hint {
+      font-size: 0.725rem;
+      color: var(--text-tertiary);
+      font-weight: 400;
+      flex-shrink: 0;
+    }
+
+    textarea, input[type="text"], input[type="number"], select {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      padding: 0.7rem 0.85rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .prompt-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+
+    .prompt-chip {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.725rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .prompt-chip:hover {
+      background: var(--surface-hover);
+      color: var(--text-main);
+      border-color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.85rem;
+      width: 100%;
+      min-width: 0;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .range-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.85rem;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .range-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .range-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: #818cf8;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--primary-gradient);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+      width: 100%;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-hover);
+      border-color: var(--text-secondary);
+    }
+
+    /* Stepper Lifecycle */
+    .lifecycle-stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 1.25rem 0;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .lifecycle-stepper::before {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: var(--border);
+      z-index: 1;
+    }
+
+    .step-item {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.725rem;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .step-node {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      transition: all 0.3s;
+    }
+
+    .step-item.active .step-node {
+      border-color: var(--primary);
+      background: #312e81;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+      animation: pulse 1.5s infinite;
+    }
+
+    .step-item.completed .step-node {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+    }
+
+    .step-item.failed .step-node {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* Audio Player & Visualizer */
+    .player-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      margin-top: 1.15rem;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    canvas#waveformVisualizer {
+      width: 100%;
+      max-width: 100%;
+      height: 76px;
+      background: #040711;
+      border-radius: var(--radius-sm);
+      margin-bottom: 0.85rem;
+      display: block;
+    }
+
+    audio {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+
+    .meta-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      width: 100%;
+    }
+
+    .metric-item {
+      background: var(--surface-elevated);
+      padding: 0.45rem 0.65rem;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      min-width: 0;
+    }
+
+    .metric-label {
+      font-size: 0.68rem;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    .metric-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* History Items */
+    .history-card-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .history-text-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .history-snippet {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
+    }
+
+    .history-sub {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .history-btn-group {
+      display: flex;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    /* Voice Library Cards */
+    .voice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .voice-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s, border-color 0.15s;
+      min-width: 0;
+    }
+
+    .voice-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .voice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.4rem;
+      gap: 0.5rem;
+    }
+
+    .voice-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    .voice-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--surface-elevated);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .voice-badge.custom {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .voice-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.85rem;
+      flex-grow: 1;
+      line-height: 1.45;
+    }
+
+    .voice-footer {
+      display: flex;
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: #040711;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.825rem;
+      color: #cbd5e1;
+      direction: ltr;
+      text-align: left;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Toast */
+    .toast-box {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.85rem 1.4rem;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 999;
+      display: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      max-width: 90vw;
+    }
+
+    .toast-box.show {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zm5.3 7a.75.75 0 0 0-1.5 0 3.8 3.8 0 0 1-7.6 0 .75.75 0 0 0-1.5 0 5.3 5.3 0 0 0 4.55 5.23v2.02H9a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-1.75v-2.02A5.3 5.3 0 0 0 17.3 9z"/></svg>
+      </div>
+      <div>
+        <div class="brand-title">Chatterbox Speech Studio</div>
+        <div class="brand-tag">Autonomous Neural Speech Synthesis Engine for Orqevyn</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="status-pill">
+        <div id="statusDot" class="status-indicator"></div>
+        <span id="statusLabel">Connecting...</span>
+      </div>
+      <span id="hwBadge" class="hardware-badge">CUDA / CPU</span>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('synthesis')">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 3v18m-6-14v10m12-8v6"/></svg>
+      <span>Speech Studio</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('voicelab')">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M19 11a7 7 0 0 1-7 7m0 0a7 7 0 0 1-7-7m7 7v4m-8 0h16"/></svg>
+      <span>Voice Lab & Cloning</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('library')">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+      <span>Voice Catalog (23 Languages)</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('docs')">
+      <svg class="tab-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>API & Integration Guide</span>
+    </button>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main>
+    <!-- TAB 1: SPEECH SYNTHESIS -->
+    <div id="tab-synthesis" class="tab-pane active">
+      <div class="bento-grid">
+        <!-- Controls Column -->
+        <section class="card">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Synthesis Controls</span>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <span>Text to Synthesize</span>
+              <span id="charCount" class="label-hint">0 / 5000 chars</span>
+            </label>
+            <textarea id="textInput" maxlength="5000" placeholder="Enter text to synthesize (supports up to 5,000 characters with automatic sentence chunking)...">Welcome to Orqevyn, the adaptive autonomous intelligence system.</textarea>
+            
+            <div class="prompt-chips">
+              <span class="prompt-chip" onclick="setPrompt(this.innerText)">Welcome to Orqevyn, the adaptive autonomous intelligence system.</span>
+              <span class="prompt-chip" onclick="setPrompt(this.innerText)">The audio artifact has been forensically verified with zero signal corruption.</span>
+              <span class="prompt-chip" onclick="setPrompt(this.innerText)">Last month, we reached a new milestone with two billion views on our channel.</span>
+            </div>
+          </div>
+
+          <div class="grid-2 form-group">
+            <div style="min-width: 0;">
+              <label>Language</label>
+              <select id="langSelect" onchange="onLanguageChanged()">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div style="min-width: 0;">
+              <label>Target Voice</label>
+              <select id="voiceSelect">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2 form-group">
+            <div class="range-box">
+              <div class="range-header">
+                <span>Expressiveness (Exaggeration)</span>
+                <span class="range-val" id="exaggerationVal">0.5</span>
+              </div>
+              <input type="range" id="exaggerationSlider" min="0.1" max="1.5" step="0.05" value="0.5" oninput="updateRange('exaggeration', this.value)">
+            </div>
+
+            <div class="range-box">
+              <div class="range-header">
+                <span>Creativity (Temperature)</span>
+                <span class="range-val" id="temperatureVal">0.8</span>
+              </div>
+              <input type="range" id="temperatureSlider" min="0.1" max="1.5" step="0.05" value="0.8" oninput="updateRange('temperature', this.value)">
+            </div>
+          </div>
+
+          <div class="grid-2 form-group">
+            <div class="range-box">
+              <div class="range-header">
+                <span>Guidance (CFG / Pace Weight)</span>
+                <span class="range-val" id="cfgVal">0.5</span>
+              </div>
+              <input type="range" id="cfgSlider" min="0.0" max="1.5" step="0.05" value="0.5" oninput="updateRange('cfg', this.value)">
+            </div>
+
+            <div class="range-box">
+              <div class="range-header">
+                <span>Repetition Penalty</span>
+                <span class="range-val" id="repVal">1.2</span>
+              </div>
+              <input type="range" id="repSlider" min="1.0" max="2.0" step="0.05" value="1.2" oninput="updateRange('rep', this.value)">
+            </div>
+          </div>
+
+          <div class="grid-2 form-group">
+            <div>
+              <label>Random Seed</label>
+              <input type="number" id="seedInput" value="0" min="0" placeholder="0 = random">
+            </div>
+
+            <div>
+              <label>Execution Mode</label>
+              <select id="modeSelect">
+                <option value="sync" selected>Synchronous (Wait for verification)</option>
+                <option value="async">Asynchronous (Background task)</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="generateBtn" class="btn" onclick="startGeneration()">
+            <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Generate Speech & Verify Artifact</span>
+          </button>
+        </section>
+
+        <!-- Monitoring & Audio Player Column -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; width: 100%;">
+          <section class="card">
+            <div class="card-title">
+              <svg class="card-title-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Task Execution Lifecycle</span>
+            </div>
+
+            <div class="lifecycle-stepper">
+              <div class="step-item" id="step-RECEIVED">
+                <div class="step-node">1</div>
+                <span>Received</span>
+              </div>
+              <div class="step-item" id="step-VALIDATING">
+                <div class="step-node">2</div>
+                <span>Validating</span>
+              </div>
+              <div class="step-item" id="step-GENERATING">
+                <div class="step-node">3</div>
+                <span>Generating</span>
+              </div>
+              <div class="step-item" id="step-VERIFYING">
+                <div class="step-node">4</div>
+                <span>Verifying</span>
+              </div>
+              <div class="step-item" id="step-COMPLETED">
+                <div class="step-node">✓</div>
+                <span>Completed</span>
+              </div>
+            </div>
+
+            <!-- Audio Output Section -->
+            <div class="player-card" id="playerCard" style="display: none;">
+              <canvas id="waveformVisualizer"></canvas>
+              <audio id="audioPlayer" controls></audio>
+
+              <div class="meta-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">Sample Rate</div>
+                  <div class="metric-value" id="metaSr">24,000 Hz</div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">Duration</div>
+                  <div class="metric-value" id="metaDuration">0.00 s</div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">File Size</div>
+                  <div class="metric-value" id="metaSize">0 KB</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+                <a id="downloadWavBtn" class="btn" style="text-decoration: none; padding: 0.65rem;" download="generated_speech.wav">
+                  💾 Download Verified WAV
+                </a>
+              </div>
+            </div>
+
+            <div id="errorBanner" style="display: none; margin-top: 1rem; background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; color: #fca5a5; word-break: break-word;">
+              <strong>Error: </strong><span id="errorMessage"></span>
+            </div>
+          </section>
+
+          <!-- History Card -->
+          <section class="card" style="flex: 1;">
+            <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg class="card-title-icon" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                <span>Recent Generations</span>
+              </div>
+              <button onclick="clearHistory()" class="btn-secondary" style="padding: 2px 10px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-tertiary);">Clear</button>
+            </div>
+            <div id="historyContainer" style="display: flex; flex-direction: column; gap: 0.65rem; max-height: 240px; overflow-y: auto; width: 100%; min-width: 0;">
+              <!-- History items -->
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: VOICE LAB & CLONING -->
+    <div id="tab-voicelab" class="tab-pane">
+      <div class="bento-grid">
+        <section class="card">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zm5.3 7a.75.75 0 0 0-1.5 0 3.8 3.8 0 0 1-7.6 0 .75.75 0 0 0-1.5 0 5.3 5.3 0 0 0 4.55 5.23v2.02H9a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5h-1.75v-2.02A5.3 5.3 0 0 0 17.3 9z"/></svg>
+            <span>Clone & Register Custom Voice</span>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Upload any short reference sample (WAV, MP3, M4A, FLAC) between 3 to 10 seconds. The engine will automatically resample and persist it into the system for instant synthesis across all languages.
+          </p>
+
+          <div class="grid-2 form-group">
+            <div>
+              <label>Voice Display Name *</label>
+              <input type="text" id="newVoiceName" placeholder="e.g. Sarah Professional or Ahmed Studio">
+            </div>
+
+            <div>
+              <label>Voice Identifier (Optional)</label>
+              <input type="text" id="newVoiceId" placeholder="custom_speaker_01">
+            </div>
+          </div>
+
+          <div class="grid-2 form-group">
+            <div>
+              <label>Primary Language</label>
+              <select id="newVoiceLang">
+                <option value="en" selected>English (en)</option>
+                <option value="ar">Arabic (ar)</option>
+                <option value="fr">French (fr)</option>
+                <option value="es">Spanish (es)</option>
+                <option value="de">German (de)</option>
+                <option value="tr">Turkish (tr)</option>
+                <option value="zh">Chinese (zh)</option>
+                <option value="ja">Japanese (ja)</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Voice Gender</label>
+              <select id="newVoiceGender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="neutral">Neutral</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description (Optional)</label>
+            <input type="text" id="newVoiceDesc" placeholder="Warm and authoritative narrator voice">
+          </div>
+
+          <div class="form-group">
+            <label>Reference Audio File (WAV / M4A / MP3 / FLAC / OGG)</label>
+            <div style="border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 1.25rem; text-align: center; background: var(--bg); cursor: pointer;" onclick="document.getElementById('voiceFileInput').click()">
+              <input type="file" id="voiceFileInput" accept="audio/*,.wav,.mp3,.m4a,.flac,.ogg,.webm" style="display: none;" onchange="handleVoiceFile(event)">
+              <svg style="width: 28px; height: 28px; fill: var(--primary); margin: 0 auto 0.5rem;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div id="fileUploadPrompt" style="font-weight: 600; font-size: 0.88rem;">Click or drag audio file to upload</div>
+              <div style="font-size: 0.725rem; color: var(--text-tertiary); margin-top: 4px;">Universal formats supported &bull; Automatically converted to standard 24kHz PCM WAV</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Or provide direct audio URL</label>
+            <input type="text" id="newVoiceUrl" placeholder="https://example.com/reference_sample.flac">
+          </div>
+
+          <button id="saveVoiceBtn" class="btn" onclick="saveCustomVoice()">
+            <span>💾 Save & Register Voice Profile</span>
+          </button>
+        </section>
+
+        <!-- Current Custom Voices Card -->
+        <section class="card">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Registered Custom Voices</span>
+          </div>
+
+          <div id="customVoicesList" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 480px; overflow-y: auto; width: 100%; min-width: 0;">
+            <!-- Populated via JS -->
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- TAB 3: COMPLETE VOICES LIBRARY (23 LANGUAGES) -->
+    <div id="tab-library" class="tab-pane">
+      <section class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 1.25rem; font-weight: 800;">🌍 Official Multilingual Voice Catalog (23 Languages)</div>
+            <div style="font-size: 0.825rem; color: var(--text-secondary);">Curated reference speakers optimized for Chatterbox Multilingual synthesis</div>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <input type="text" id="voiceSearchInput" placeholder="Search language or speaker..." style="width: 260px; padding: 0.5rem 0.85rem;" oninput="filterVoicesLibrary()">
+          </div>
+        </div>
+      </section>
+
+      <div class="voice-grid" id="fullVoicesGrid">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 4: API & INTEGRATION GUIDE -->
+    <div id="tab-docs" class="tab-pane">
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <section class="card">
+          <div class="card-title">
+            <svg class="card-title-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Universal API Integration Guide</span>
+          </div>
+
+          <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+            Chatterbox provides a standard, robust REST API with observable lifecycle transitions and forensic WAV audio verification.
+          </p>
+
+          <h3 style="font-size: 0.95rem; margin: 1.25rem 0 0.5rem; color: #818cf8;">1. Python Client Adapter:</h3>
+          <pre><code>from chatterbox.client import OrqevynSpeechClient
+
+client = OrqevynSpeechClient(base_url="http://127.0.0.1:8000")
+
+result = client.speak_text(
+    text="Welcome to the autonomous neural speech engine.",
+    language="en",
+    voice="en_female",
+    options={"exaggeration": 0.5, "wait": True}
+)
+
+print(f"Verified Audio File: {result.audio_path}")
+print(f"Duration: {result.duration_seconds}s | Sample Rate: {result.sample_rate}Hz")</code></pre>
+
+          <h3 style="font-size: 0.95rem; margin: 1.25rem 0 0.5rem; color: #818cf8;">2. cURL / Shell:</h3>
+          <pre><code>curl -X POST "http://127.0.0.1:8000/v1/speech" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello world from Chatterbox Speech Engine.",
+    "language": "en",
+    "voice": "en_female",
+    "options": {"wait": true}
+  }'</code></pre>
+
+          <h3 style="font-size: 0.95rem; margin: 1.25rem 0 0.5rem; color: #818cf8;">3. JavaScript / TypeScript / Node.js:</h3>
+          <pre><code>const response = await fetch("http://127.0.0.1:8000/v1/speech", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    text: "Welcome to the speech studio.",
+    language: "en",
+    voice: "en_female",
+    options: { wait: true }
+  })
+});
+const job = await response.json();
+console.log("Audio URL:", `http://127.0.0.1:8000${job.artifact.audio_url}`);</code></pre>
+
+          <h3 style="font-size: 0.95rem; margin: 1.25rem 0 0.5rem; color: #818cf8;">4. C# (.NET 8 - Orqevyn Native Integration):</h3>
+          <pre><code>using Orqevyn.Core.Speech;
+
+var client = new OrqevynSpeechClient(new HttpClient { BaseAddress = new Uri("http://127.0.0.1:8000") });
+var result = await client.SpeakTextAsync(
+    text: "Welcome to Orqevyn speech engine.",
+    language: "en",
+    voice: "en_female"
+);
+Console.WriteLine($"Audio verified and ready at: {result.AudioPath}");</code></pre>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast-box"></div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let allVoices = [];
+    let customVoiceBase64 = null;
+    let audioCtx, analyser, dataArray, canvasCtx, visualizerActive = false;
+    let localHistory = JSON.parse(localStorage.getItem('chatterbox_studio_history_en') || '[]');
+
+    const LANGUAGE_NAMES = {
+      "en": "English (en)",
+      "ar": "Arabic (ar)",
+      "fr": "French (fr)",
+      "es": "Spanish (es)",
+      "de": "German (de)",
+      "da": "Danish (da)",
+      "el": "Greek (el)",
+      "fi": "Finnish (fi)",
+      "he": "Hebrew (he)",
+      "hi": "Hindi (hi)",
+      "it": "Italian (it)",
+      "ja": "Japanese (ja)",
+      "ko": "Korean (ko)",
+      "ms": "Malay (ms)",
+      "nl": "Dutch (nl)",
+      "no": "Norwegian (no)",
+      "pl": "Polish (pl)",
+      "pt": "Portuguese (pt)",
+      "ru": "Russian (ru)",
+      "sv": "Swedish (sv)",
+      "sw": "Swahili (sw)",
+      "tr": "Turkish (tr)",
+      "zh": "Chinese (zh)"
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initApp();
+    });
+
+    async function initApp() {
+      setupEvents();
+      await checkHealth();
+      await fetchAllVoices();
+      populateLanguageDropdown();
+      renderVoiceSelect();
+      renderHistory();
+      initAudioVisualizer();
+      setInterval(checkHealth, 8000);
+    }
+
+    function setupEvents() {
+      const textEl = document.getElementById("textInput");
+      textEl.addEventListener("input", () => {
+        document.getElementById("charCount").innerText = `${textEl.value.length} / 5000 chars`;
+      });
+      document.getElementById("charCount").innerText = `${textEl.value.length} / 5000 chars`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.remove("active"));
+
+      const targetBtn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick")?.includes(tabId));
+      if (targetBtn) targetBtn.classList.add("active");
+
+      const targetPane = document.getElementById(`tab-${tabId}`);
+      if (targetPane) targetPane.classList.add("active");
+
+      if (tabId === 'library') renderVoicesLibrary();
+      if (tabId === 'voicelab') renderCustomVoicesList();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.className = "toast-box show";
+      setTimeout(() => { toast.className = "toast-box"; }, 3500);
+    }
+
+    async function checkHealth() {
+      const dot = document.getElementById("statusDot");
+      const label = document.getElementById("statusLabel");
+      const hwBadge = document.getElementById("hwBadge");
+
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        dot.className = "status-indicator ready";
+        label.innerText = data.ready ? "Model Ready & Active" : "Initializing Model...";
+        hwBadge.innerText = `${data.device.toUpperCase()} | Q: ${data.queue_depth}`;
+      } catch (e) {
+        dot.className = "status-indicator";
+        label.innerText = "Offline";
+        hwBadge.innerText = "OFFLINE";
+      }
+    }
+
+    async function fetchAllVoices() {
+      try {
+        const res = await fetch(`${API_BASE}/v1/voices`);
+        if (!res.ok) return;
+        allVoices = await res.json();
+      } catch (e) {
+        console.error("Failed to load voices:", e);
+      }
+    }
+
+    function populateLanguageDropdown() {
+      const langSelect = document.getElementById("langSelect");
+      langSelect.innerHTML = "";
+      Object.keys(LANGUAGE_NAMES).forEach(code => {
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.innerText = LANGUAGE_NAMES[code];
+        if (code === "en") opt.selected = true;
+        langSelect.appendChild(opt);
+      });
+    }
+
+    function onLanguageChanged() {
+      renderVoiceSelect();
+    }
+
+    function renderVoiceSelect() {
+      const currentLang = document.getElementById("langSelect").value;
+      const voiceSelect = document.getElementById("voiceSelect");
+      voiceSelect.innerHTML = "";
+
+      const filtered = allVoices.filter(v => v.language === currentLang || v.language === "multilingual");
+
+      // Custom voices group
+      const customVoices = filtered.filter(v => !v.is_builtin);
+      if (customVoices.length > 0) {
+        const optGroup = document.createElement("optgroup");
+        optGroup.label = "⭐ Custom Registered Voices";
+        customVoices.forEach(v => {
+          const opt = document.createElement("option");
+          opt.value = v.voice_id;
+          opt.innerText = `★ ${v.name}`;
+          optGroup.appendChild(opt);
+        });
+        voiceSelect.appendChild(optGroup);
+      }
+
+      // Built-in group
+      const builtinVoices = filtered.filter(v => v.is_builtin);
+      const optGroupBuiltin = document.createElement("optgroup");
+      optGroupBuiltin.label = "Pretrained System Speakers";
+      builtinVoices.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v.voice_id;
+        opt.innerText = `${v.name} (${v.voice_id})`;
+        optGroupBuiltin.appendChild(opt);
+      });
+      voiceSelect.appendChild(optGroupBuiltin);
+    }
+
+    function setPrompt(text) {
+      const el = document.getElementById("textInput");
+      el.value = text;
+      document.getElementById("charCount").innerText = `${text.length} / 5000 chars`;
+    }
+
+    function updateRange(key, val) {
+      if (key === 'exaggeration') document.getElementById("exaggerationVal").innerText = val;
+      if (key === 'temperature') document.getElementById("temperatureVal").innerText = val;
+      if (key === 'cfg') document.getElementById("cfgVal").innerText = val;
+      if (key === 'rep') document.getElementById("repVal").innerText = val;
+    }
+
+    function updateStepper(status) {
+      const order = ['RECEIVED', 'VALIDATING', 'GENERATING', 'VERIFYING', 'COMPLETED'];
+      const targetIdx = order.indexOf(status);
+
+      if (status === 'FAILED') {
+        const active = document.querySelector(".step-item.active");
+        if (active) active.className = "step-item failed";
+        return;
+      }
+
+      order.forEach((s, idx) => {
+        const el = document.getElementById(`step-${s}`);
+        if (idx < targetIdx) el.className = "step-item completed";
+        else if (idx === targetIdx) el.className = "step-item active";
+        else el.className = "step-item";
+      });
+    }
+
+    function resetStepper() {
+      ['RECEIVED', 'VALIDATING', 'GENERATING', 'VERIFYING', 'COMPLETED'].forEach(s => {
+        document.getElementById(`step-${s}`).className = "step-item";
+      });
+      document.getElementById("errorBanner").style.display = "none";
+    }
+
+    async function startGeneration() {
+      const text = document.getElementById("textInput").value.trim();
+      if (!text) {
+        showToast("Please enter text to synthesize!");
+        return;
+      }
+
+      const btn = document.getElementById("generateBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳ Synthesizing & Verifying...</span>`;
+      resetStepper();
+      updateStepper("RECEIVED");
+
+      const isSync = document.getElementById("modeSelect").value === "sync";
+      // Dynamic timeout: 35s per 100 characters (bounded between 60s and 300s for server compatibility)
+      const dynamicTimeoutSec = Math.min(300, Math.max(60, Math.ceil(text.length / 100) * 35));
+
+      const payload = {
+        text: text,
+        language: document.getElementById("langSelect").value,
+        voice: document.getElementById("voiceSelect").value,
+        options: {
+          exaggeration: parseFloat(document.getElementById("exaggerationSlider").value),
+          temperature: parseFloat(document.getElementById("temperatureSlider").value),
+          cfg_weight: parseFloat(document.getElementById("cfgSlider").value),
+          repetition_penalty: parseFloat(document.getElementById("repSlider").value),
+          seed: parseInt(document.getElementById("seedInput").value) || 0,
+          wait: isSync,
+          timeout: dynamicTimeoutSec
+        }
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/speech`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Server request failed");
+        }
+
+        const job = await res.json();
+        if (isSync && job.status === "COMPLETED") {
+          finishJob(job);
+        } else {
+          await pollJob(job.job_id, dynamicTimeoutSec);
+        }
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Generate Speech & Verify Artifact</span>`;
+      }
+    }
+
+    async function pollJob(jobId, timeoutSec = 300) {
+      const start = Date.now();
+      const maxMs = timeoutSec * 1000;
+      const btn = document.getElementById("generateBtn");
+
+      while (Date.now() - start < maxMs) {
+        await new Promise(r => setTimeout(r, 800));
+        const res = await fetch(`${API_BASE}/v1/speech/jobs/${jobId}`);
+        if (!res.ok) continue;
+        const job = await res.json();
+        updateStepper(job.status);
+
+        const elapsedSec = Math.round((Date.now() - start) / 1000);
+        btn.innerHTML = `<span>⏳ Synthesizing (${elapsedSec}s / up to ${timeoutSec}s)...</span>`;
+
+        if (job.status === "COMPLETED") {
+          finishJob(job);
+          return;
+        } else if (job.status === "FAILED") {
+          showError(job.error?.message || "Synthesis failed");
+          return;
+        }
+      }
+      showError("Maximum execution timeout exceeded for this request.");
+    }
+
+    function finishJob(job) {
+      updateStepper("COMPLETED");
+      const audioUrl = `${API_BASE}/v1/speech/jobs/${job.job_id}/audio`;
+      const player = document.getElementById("audioPlayer");
+      player.src = audioUrl;
+      player.play().catch(() => {});
+
+      document.getElementById("playerCard").style.display = "block";
+      document.getElementById("downloadWavBtn").href = audioUrl;
+
+      if (job.artifact) {
+        document.getElementById("metaSr").innerText = `${job.artifact.sample_rate.toLocaleString()} Hz`;
+        document.getElementById("metaDuration").innerText = `${job.artifact.duration_seconds.toFixed(2)} s`;
+        document.getElementById("metaSize").innerText = `${Math.round(job.artifact.file_size_bytes / 1024)} KB`;
+      }
+
+      // History
+      localHistory.unshift({
+        job_id: job.job_id,
+        text: job.request.text,
+        language: job.request.language,
+        duration: job.artifact ? job.artifact.duration_seconds.toFixed(1) : 0,
+        audio_url: audioUrl,
+        timestamp: new Date().toLocaleTimeString()
+      });
+      if (localHistory.length > 20) localHistory.pop();
+      localStorage.setItem('chatterbox_studio_history_en', JSON.stringify(localHistory));
+      renderHistory();
+      showToast("Speech artifact generated and verified successfully!");
+    }
+
+    function showError(msg) {
+      updateStepper("FAILED");
+      const errBox = document.getElementById("errorBanner");
+      document.getElementById("errorMessage").innerText = msg;
+      errBox.style.display = "block";
+      showToast("Error: " + msg);
+    }
+
+    function renderHistory() {
+      const container = document.getElementById("historyContainer");
+      if (localHistory.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-tertiary); padding: 1.5rem 0; font-size: 0.85rem;">No recent generations in this session.</div>`;
+        return;
+      }
+
+      container.innerHTML = localHistory.map(item => `
+        <div class="history-card-box">
+          <div class="history-text-col">
+            <div class="history-snippet">${item.text}</div>
+            <div class="history-sub">${item.language.toUpperCase()} &bull; ${item.duration}s &bull; ${item.timestamp}</div>
+          </div>
+          <div class="history-btn-group">
+            <button onclick="playAudio('${item.audio_url}')" style="background: var(--surface-elevated); color: #fff; border: 1px solid var(--border); padding: 5px 9px; border-radius: 4px; cursor: pointer;">▶</button>
+            <a href="${item.audio_url}" download="speech.wav" style="background: var(--surface-elevated); color: #fff; border: 1px solid var(--border); padding: 5px 9px; border-radius: 4px; text-decoration: none;">💾</a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function playAudio(url) {
+      const player = document.getElementById("audioPlayer");
+      player.src = url;
+      document.getElementById("playerCard").style.display = "block";
+      player.play();
+    }
+
+    function clearHistory() {
+      localHistory = [];
+      localStorage.removeItem('chatterbox_studio_history_en');
+      renderHistory();
+      showToast("History cleared");
+    }
+
+    /* Convert AudioBuffer to 16-bit PCM WAV in browser */
+    function audioBufferToWav(buffer, optSampleRate = 24000) {
+      const numChannels = 1;
+      const sampleRate = optSampleRate;
+      const format = 1; // PCM
+      const bitDepth = 16;
+      
+      let samples;
+      if (buffer.numberOfChannels > 1) {
+        const ch0 = buffer.getChannelData(0);
+        const ch1 = buffer.getChannelData(1);
+        samples = new Float32Array(ch0.length);
+        for (let i = 0; i < ch0.length; i++) samples[i] = (ch0[i] + ch1[i]) / 2;
+      } else {
+        samples = buffer.getChannelData(0);
+      }
+
+      let targetSamples = samples;
+      if (buffer.sampleRate !== sampleRate) {
+        const ratio = sampleRate / buffer.sampleRate;
+        const newLen = Math.round(samples.length * ratio);
+        targetSamples = new Float32Array(newLen);
+        for (let i = 0; i < newLen; i++) {
+          const originIdx = i / ratio;
+          const idxFloor = Math.floor(originIdx);
+          const idxCeil = Math.min(samples.length - 1, idxFloor + 1);
+          const fract = originIdx - idxFloor;
+          targetSamples[i] = samples[idxFloor] * (1 - fract) + samples[idxCeil] * fract;
+        }
+      }
+
+      const byteRate = sampleRate * numChannels * (bitDepth / 8);
+      const blockAlign = numChannels * (bitDepth / 8);
+      const dataSize = targetSamples.length * (bitDepth / 8);
+      const bufferLen = 44 + dataSize;
+      const arrayBuffer = new ArrayBuffer(bufferLen);
+      const view = new DataView(arrayBuffer);
+
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, format, true);
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, byteRate, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, bitDepth, true);
+      writeStr(36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < targetSamples.length; i++, offset += 2) {
+        let s = Math.max(-1, Math.min(1, targetSamples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+
+      return new Uint8Array(arrayBuffer);
+    }
+
+    /* Voice Lab Handlers */
+    async function handleVoiceFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      document.getElementById("fileUploadPrompt").innerText = `Processing: ${file.name}...`;
+
+      try {
+        const fileData = await file.arrayBuffer();
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        try {
+          const decoded = await ctx.decodeAudioData(fileData);
+          const wavBytes = audioBufferToWav(decoded, 24000);
+          
+          let binary = '';
+          const bytes = wavBytes;
+          const len = bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          customVoiceBase64 = window.btoa(binary);
+          document.getElementById("fileUploadPrompt").innerText = `✓ Standard WAV Ready: ${file.name} (${Math.round(wavBytes.length / 1024)} KB)`;
+          showToast("Audio converted and normalized to standard 24kHz WAV");
+        } catch (decodeErr) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            customVoiceBase64 = reader.result.split(",")[1];
+            document.getElementById("fileUploadPrompt").innerText = `✓ Ready for Upload: ${file.name}`;
+          };
+          reader.readAsDataURL(file);
+        }
+      } catch (err) {
+        showToast("Notice: " + err.message);
+      }
+    }
+
+    async function saveCustomVoice() {
+      const name = document.getElementById("newVoiceName").value.trim();
+      if (!name) {
+        showToast("Please enter a voice name!");
+        return;
+      }
+
+      const voiceId = document.getElementById("newVoiceId").value.trim() || undefined;
+      const lang = document.getElementById("newVoiceLang").value;
+      const gender = document.getElementById("newVoiceGender").value;
+      const desc = document.getElementById("newVoiceDesc").value.trim();
+      const url = document.getElementById("newVoiceUrl").value.trim();
+
+      if (!customVoiceBase64 && !url) {
+        showToast("Please upload an audio sample or provide a URL!");
+        return;
+      }
+
+      const saveBtn = document.getElementById("saveVoiceBtn");
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Registering Voice Profile...";
+
+      const payload = {
+        name: name,
+        voice_id: voiceId,
+        language: lang,
+        gender: gender,
+        description: desc,
+        reference_path: url || null,
+        reference_base64: customVoiceBase64 || null
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/voices`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Failed to register custom voice");
+        }
+
+        const newVoice = await res.json();
+        showToast(`Voice successfully registered: ${newVoice.name}`);
+        
+        await fetchAllVoices();
+        renderVoiceSelect();
+        renderCustomVoicesList();
+
+        document.getElementById("newVoiceName").value = "";
+        document.getElementById("newVoiceId").value = "";
+        document.getElementById("newVoiceDesc").value = "";
+        document.getElementById("newVoiceUrl").value = "";
+        document.getElementById("fileUploadPrompt").innerText = "Click or drag audio file to upload";
+        customVoiceBase64 = null;
+
+      } catch (err) {
+        showToast("Error: " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "💾 Save & Register Voice Profile";
+      }
+    }
+
+    function renderCustomVoicesList() {
+      const list = document.getElementById("customVoicesList");
+      const customs = allVoices.filter(v => !v.is_builtin);
+
+      if (customs.length === 0) {
+        list.innerHTML = `<div style="text-align: center; color: var(--text-tertiary); padding: 2rem 0; font-size: 0.85rem;">No custom voices registered yet. Clone your first voice above!</div>`;
+        return;
+      }
+
+      list.innerHTML = customs.map(v => `
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; width: 100%; box-sizing: border-box; min-width: 0;">
+          <div style="min-width: 0; flex: 1;">
+            <div style="font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${v.name} <span class="voice-badge custom">${v.gender.toUpperCase()}</span></div>
+            <div style="font-size: 0.725rem; color: var(--text-secondary); margin-top: 2px;">ID: <code>${v.voice_id}</code> &bull; Lang: ${v.language.toUpperCase()}</div>
+            ${v.description ? `<div style="font-size: 0.725rem; color: var(--text-tertiary); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${v.description}</div>` : ''}
+          </div>
+          <div style="display: flex; gap: 0.4rem; flex-shrink: 0;">
+            <button onclick="useVoice('${v.voice_id}', '${v.language}')" class="btn" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; width: auto;">Use</button>
+            <button onclick="deleteCustomVoice('${v.voice_id}')" style="background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); color: #fca5a5; padding: 0.35rem 0.65rem; border-radius: var(--radius-sm); cursor: pointer;">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function deleteCustomVoice(voiceId) {
+      if (!confirm(`Are you sure you want to delete custom voice '${voiceId}'?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/v1/voices/${voiceId}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Delete operation failed");
+        showToast("Voice profile deleted successfully");
+        await fetchAllVoices();
+        renderVoiceSelect();
+        renderCustomVoicesList();
+      } catch (e) {
+        showToast("Error deleting voice: " + e.message);
+      }
+    }
+
+    /* Voice Library Handlers */
+    function renderVoicesLibrary(filterQuery = "") {
+      const grid = document.getElementById("fullVoicesGrid");
+      let list = allVoices;
+
+      if (filterQuery) {
+        const q = filterQuery.toLowerCase();
+        list = list.filter(v => v.name.toLowerCase().includes(q) || v.voice_id.toLowerCase().includes(q) || v.language.toLowerCase().includes(q));
+      }
+
+      grid.innerHTML = list.map(v => `
+        <div class="voice-card">
+          <div>
+            <div class="voice-header">
+              <div class="voice-title">${v.name}</div>
+              <span class="voice-badge ${v.is_builtin ? '' : 'custom'}">${v.is_builtin ? 'Official' : 'Custom'}</span>
+            </div>
+            <div style="font-size: 0.75rem; color: #818cf8; font-family: 'JetBrains Mono', monospace; margin-bottom: 0.5rem;">${v.voice_id} &bull; ${v.language.toUpperCase()}</div>
+            <div class="voice-desc">${v.description || 'Pretrained neural voice model.'}</div>
+          </div>
+          <div class="voice-footer">
+            <button class="btn" style="padding: 0.45rem; font-size: 0.825rem;" onclick="useVoice('${v.voice_id}', '${v.language}')">Use Voice</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function filterVoicesLibrary() {
+      const q = document.getElementById("voiceSearchInput").value.trim();
+      renderVoicesLibrary(q);
+    }
+
+    function useVoice(voiceId, lang) {
+      switchTab('synthesis');
+      const langSelect = document.getElementById("langSelect");
+      if (lang && langSelect.querySelector(`option[value="${lang}"]`)) {
+        langSelect.value = lang;
+        onLanguageChanged();
+      }
+      setTimeout(() => {
+        const voiceSelect = document.getElementById("voiceSelect");
+        voiceSelect.value = voiceId;
+        showToast(`Selected voice: ${voiceId}`);
+      }, 50);
+    }
+
+    /* Waveform Visualizer */
+    function initAudioVisualizer() {
+      const canvas = document.getElementById("waveformVisualizer");
+      canvasCtx = canvas.getContext("2d");
+      const player = document.getElementById("audioPlayer");
+
+      player.addEventListener("play", () => {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const src = audioCtx.createMediaElementSource(player);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 64;
+          src.connect(analyser);
+          analyser.connect(audioCtx.destination);
+          dataArray = new Uint8Array(analyser.frequencyBinCount);
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        visualizerActive = true;
+        renderVisualizerFrame();
+      });
+
+      player.addEventListener("pause", () => { visualizerActive = false; });
+      player.addEventListener("ended", () => { visualizerActive = false; });
+    }
+
+    function renderVisualizerFrame() {
+      if (!visualizerActive) return;
+      requestAnimationFrame(renderVisualizerFrame);
+
+      const canvas = document.getElementById("waveformVisualizer");
+      analyser.getByteFrequencyData(dataArray);
+
+      canvasCtx.fillStyle = "#040711";
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / dataArray.length) * 1.6;
+      let x = 0;
+
+      for (let i = 0; i < dataArray.length; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height;
+        const grad = canvasCtx.createLinearGradient(0, canvas.height, 0, 0);
+        grad.addColorStop(0, "#4f46e5");
+        grad.addColorStop(1, "#10b981");
+
+        canvasCtx.fillStyle = grad;
+        canvasCtx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
+        x += barWidth;
+      }
+    }
+  </script>
+</body>
+</html>
